@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <!-- iOS full-screen + tránh “tai thỏ” -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Nap Xu TikTok</title>
-
-  <!-- iOS full-screen -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Nap Xu TikTok" />
+  <title>Nap Xu TikTok</title>
 
   <style>
     :root{
@@ -20,49 +19,48 @@
     }
     *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
+
+    /* ⚠️ Không khóa height cứng: dùng min-height để iOS không kẹt bàn phím */
     .app{
       max-width:430px;
       margin:0 auto;
-      height:100dvh; /* dùng dvh thay cho vh để iOS gõ được */
+      min-height:100dvh;  /* iOS 16+ */
+      min-height:100vh;   /* fallback */
       display:flex;
       flex-direction:column;
       align-items:stretch;
       border-left:1px solid rgba(0,0,0,0.04);
       border-right:1px solid rgba(0,0,0,0.04);
     }
+
     .header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
     .header .left{display:flex;align-items:center;gap:10px}
     .logo-img{width:32px;height:32px;border-radius:8px;overflow:hidden}
     .title{font-weight:700;font-size:16px}
-    .balance{font-size:12px;color:var(--muted)}
-    .main{flex:1;padding:18px;overflow:auto}
-    .panel{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
-    .coins{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:10px;
-      margin-top:10px;
-      justify-items:center;
+    .balance{font-size:12px;color:var(--muted);text-align:center;width:100%;display:block}
+
+    .main{
+      flex:1 1 auto;
+      padding:18px;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch; /* iOS cuộn mượt & cho phép bàn phím đẩy layout */
     }
+
+    .panel{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
+    .coins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px;justify-items:center}
     .coin{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:10px;
-      padding:12px;
-      cursor:pointer;
-      transition:0.2s;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
+      background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;cursor:pointer;transition:0.2s;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
     }
     .coin:hover{transform:scale(1.02);border-color:#00e0ff}
     .coin.active{border-color:#00e0ff;box-shadow:0 0 6px rgba(0,224,255,0.4)}
     .coin .top{display:flex;align-items:center;gap:8px;justify-content:center}
     .coin .icon{width:28px;height:28px;border-radius:50%;overflow:hidden}
     .coin .usd{margin-top:6px;font-size:13px;color:#555}
+
     .btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;font-size:16px;margin-top:16px;cursor:pointer}
+
+    /* Popup không chặn chạm khi ẩn */
     .popup{
       position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
       background:#fff;padding:18px 20px;border-radius:12px;
@@ -72,8 +70,12 @@
     }
     .spinner{width:28px;height:28px;border:3px solid rgba(0,0,0,0.1);border-top-color:#000;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 8px}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .bank{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;line-height:1;}
-    .linked{font-size:12px;color:#00e0ff;text-align:center;margin-top:2px;font-weight:600;line-height:1;}
+
+    .bank{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;line-height:1}
+    .linked{font-size:12px;color:#00e0ff;text-align:center;margin-top:2px;font-weight:600;line-height:1}
+
+    /* Tránh iOS auto-zoom khi focus */
+    input,textarea{font-size:16px;}
   </style>
 </head>
 
@@ -104,7 +106,7 @@
         <input id="username" type="text" inputmode="text"
                autocomplete="off" autocapitalize="off" autocorrect="off"
                placeholder="@username"
-               style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:14px" />
+               style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:16px;margin-bottom:14px" />
 
         <div class="coins" id="coins">
           <div class="coin" data-coins="70"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>70</div></div><div class="usd">$0.74 USD</div></div>
@@ -129,8 +131,15 @@
     const usernameEl = document.getElementById('username');
     let selected = null;
 
+    // iOS standalone: đảm bảo tap vào input sẽ bật bàn phím
+    const focusAndCenter = () => {
+      usernameEl.focus();
+      setTimeout(() => {
+        usernameEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 120);
+    };
+    usernameEl.addEventListener('touchend', focusAndCenter, { passive: true });
     usernameEl.addEventListener('focus', () => {
-      // Kéo input vào giữa khi focus (fix bàn phím iOS)
       setTimeout(() => {
         usernameEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
       }, 250);
@@ -147,7 +156,7 @@
     document.getElementById('sendBtn').addEventListener('click', () => {
       const user = usernameEl.value.trim() || '@username';
       if (!selected) return alert('Select a package');
-      const sendAmount = parseInt(selected.dataset.coins);
+      const sendAmount = parseInt(selected.dataset.coins, 10);
       if (balance < sendAmount) return alert('Not enough coins!');
 
       const popup = document.getElementById('popup');
@@ -167,8 +176,8 @@
         setTimeout(() => {
           popup.style.display = 'none';
           popup.style.pointerEvents = 'none';
-        }, 2000);
-      }, 1500);
+        }, 1800);
+      }, 1200);
     });
   </script>
 </body>
