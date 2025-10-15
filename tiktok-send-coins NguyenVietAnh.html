@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Send Coins - TikTok Demo</title>
+<style>
+:root{
+  --bg:#f5f6f7;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#00e0ff;
+  --text:#111827;
+}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
+.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;align-items:stretch;
+  border-left:1px solid rgba(0,0,0,0.04);border-right:1px solid rgba(0,0,0,0.04);}
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
+.header .left{display:flex;align-items:center;gap:10px}
+.logo-img{width:32px;height:32px;border-radius:8px;overflow:hidden}
+.title{font-weight:700;font-size:16px}
+.balance{font-size:12px;color:var(--muted)}
+.main{flex:1;padding:18px;overflow:auto}
+.panel{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
+.coins{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-top:10px;
+  justify-items:center;
+}
+.coin{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  padding:12px;
+  cursor:pointer;
+  transition:0.2s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.coin:hover{transform:scale(1.02);border-color:#00e0ff}
+.coin.active{border-color:#00e0ff;box-shadow:0 0 6px rgba(0,224,255,0.4)}
+.coin .top{display:flex;align-items:center;gap:8px;justify-content:center}
+.coin .icon{width:28px;height:28px;border-radius:50%;overflow:hidden}
+.coin .usd{margin-top:6px;font-size:13px;color:#555}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;font-size:16px;margin-top:16px;cursor:pointer}
+.popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:18px 20px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.1);text-align:center;display:none;z-index:50;width:260px}
+.spinner{width:28px;height:28px;border:3px solid rgba(0,0,0,0.1);border-top-color:#000;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.coin .top div:last-child {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.balance {
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+.coin {
+  padding: 8px 6px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+}
+.coin .icon {
+  width: 22px;
+  height: 22px;
+}
+.coin .top div:last-child {
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.coin .usd {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.coin {
+  width: 90%;
+  max-width: 180px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  margin: 0 auto;
+}
+<!-- added bank/link styles -->
+.bank {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 4px;
+  line-height: 1;
+}
+.linked {
+  font-size: 12px;
+  color: #00e0ff;
+  text-align: center;
+  margin-top: 2px;
+  font-weight: 600;
+  line-height: 1;
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<div class="left">
+<div class="logo-img"><img alt="TikTok" src="https://marketplace.canva.com/oIHjw/MAGzNgoIHjw/1/tl/canva-tik-tok-logo-MAGzNgoIHjw.png" style="width:100%;height:100%;object-fit:cover"/></div>
+<div>
+<div class="title">Send Coins</div>
+<div class="balance" id="balance"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;border-radius:50%;"/>429,037,106</div>
+<div class="bank">Th» ngân hàng: ********8683</div><div class="linked">ã liên k¿t </div></div>
+</div>
+</div>
+<div class="main">
+<div class="panel">
+<label style="font-size:13px;color:var(--muted);margin-bottom:6px;display:block">Enter username</label>
+<input id="username" placeholder="@username" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:14px"/>
+<div class="coins" id="coins">
+<div class="coin" data-coins="70" data-price="$0.74"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>70</div></div><div class="usd">$0.74 USD</div></div>
+<div class="coin" data-coins="350" data-price="$3.70"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>350</div></div><div class="usd">$3.70 USD</div></div>
+<div class="coin" data-coins="700" data-price="$7.40"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>700</div></div><div class="usd">$7.40 USD</div></div>
+<div class="coin" data-coins="1400" data-price="$14.80"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>1,400</div></div><div class="usd">$14.80 USD</div></div>
+<div class="coin" data-coins="3500" data-price="$36.99"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>3,500</div></div><div class="usd">$36.99 USD</div></div>
+<div class="coin" data-coins="7000" data-price="$73.99"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>7,000</div></div><div class="usd">$73.99 USD</div></div>
+</div>
+<button class="btn" id="sendBtn">Send Gift</button>
+</div>
+</div>
+</div>
+<div class="popup" id="popup">
+<div class="spinner" id="spinner"></div>
+<div id="popupText">Sending coins...</div>
+</div>
+<script>
+let balance = 429037106;
+const balanceEl = document.getElementById('balance');
+const coins = document.querySelectorAll('.coin');
+let selected = null;
+
+coins.forEach(c => {
+  c.addEventListener('click', () => {
+    coins.forEach(el => el.classList.remove('active'));
+    c.classList.add('active');
+    selected = c;
+  });
+});
+
+document.getElementById('sendBtn').addEventListener('click', () => {
+  const user = document.getElementById('username').value.trim() || '@username';
+  if (!selected) {
+    alert('Select a package');
+    return;
+  }
+
+  const sendAmount = parseInt(selected.dataset.coins);
+  if (balance < sendAmount) {
+    alert('Not enough coins in wallet!');
+    return;
+  }
+
+  const popup = document.getElementById('popup');
+  const spinner = document.getElementById('spinner');
+  const text = document.getElementById('popupText');
+
+  popup.style.display = 'block';
+  spinner.style.display = 'block';
+  text.textContent = `Sending ${sendAmount} coins to ${user}...`;
+
+  setTimeout(() => {
+    spinner.style.display = 'none';
+    balance -= sendAmount;
+    balanceEl.textContent = `Wallet: ${balance.toLocaleString()} coins`;
+    text.innerHTML = ` Transaction successful!<br>${sendAmount} coins sent to ${user}.`;
+    setTimeout(() => { popup.style.display = 'none'; }, 2200);
+  }, 2300);
+});
+</script>
+</body>
+</html>
