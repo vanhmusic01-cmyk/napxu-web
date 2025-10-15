@@ -1,184 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <!-- iOS full-screen + tránh “tai thỏ” -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Nap Xu TikTok" />
-  <title>Nap Xu TikTok</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Nap Xu TikTok" />
+<title>Nap Xu TikTok</title>
 
-  <style>
-    :root{
-      --bg:#f5f6f7;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --accent:#00e0ff;
-      --text:#111827;
-    }
-    *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
+<style>
+:root{
+  --bg:#f5f6f7;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#00e0ff;
+  --text:#111827;
+}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);}
+.app{
+  max-width:430px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  border-left:1px solid rgba(0,0,0,0.04);
+  border-right:1px solid rgba(0,0,0,0.04);
+}
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
+.header .left{display:flex;align-items:center;gap:10px}
+.logo-img{width:32px;height:32px;border-radius:8px;overflow:hidden}
+.title{font-weight:700;font-size:16px}
+.balance{font-size:12px;color:var(--muted);text-align:center;width:100%;display:block}
 
-    /* ⚠️ Không khóa height cứng: dùng min-height để iOS không kẹt bàn phím */
-    .app{
-      max-width:430px;
-      margin:0 auto;
-      min-height:100dvh;  /* iOS 16+ */
-      min-height:100vh;   /* fallback */
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;
-      border-left:1px solid rgba(0,0,0,0.04);
-      border-right:1px solid rgba(0,0,0,0.04);
-    }
+.panel{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06);margin:14px}
+.coins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px;justify-items:center}
+.coin{
+  background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;cursor:pointer;transition:0.2s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+}
+.coin:hover{transform:scale(1.02);border-color:#00e0ff}
+.coin.active{border-color:#00e0ff;box-shadow:0 0 6px rgba(0,224,255,0.4)}
+.coin .top{display:flex;align-items:center;gap:8px;justify-content:center}
+.coin .icon{width:28px;height:28px;border-radius:50%;overflow:hidden}
+.coin .usd{margin-top:6px;font-size:13px;color:#555}
 
-    .header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
-    .header .left{display:flex;align-items:center;gap:10px}
-    .logo-img{width:32px;height:32px;border-radius:8px;overflow:hidden}
-    .title{font-weight:700;font-size:16px}
-    .balance{font-size:12px;color:var(--muted);text-align:center;width:100%;display:block}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;font-size:16px;margin-top:16px;cursor:pointer}
 
-    .main{
-      flex:1 1 auto;
-      padding:18px;
-      overflow:auto;
-      -webkit-overflow-scrolling: touch; /* iOS cuộn mượt & cho phép bàn phím đẩy layout */
-    }
-
-    .panel{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
-    .coins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px;justify-items:center}
-    .coin{
-      background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;cursor:pointer;transition:0.2s;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-    }
-    .coin:hover{transform:scale(1.02);border-color:#00e0ff}
-    .coin.active{border-color:#00e0ff;box-shadow:0 0 6px rgba(0,224,255,0.4)}
-    .coin .top{display:flex;align-items:center;gap:8px;justify-content:center}
-    .coin .icon{width:28px;height:28px;border-radius:50%;overflow:hidden}
-    .coin .usd{margin-top:6px;font-size:13px;color:#555}
-
-    .btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;font-size:16px;margin-top:16px;cursor:pointer}
-
-    /* Popup không chặn chạm khi ẩn */
-    .popup{
-      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-      background:#fff;padding:18px 20px;border-radius:12px;
-      box-shadow:0 6px 20px rgba(0,0,0,0.1);
-      text-align:center;display:none;z-index:50;width:260px;
-      pointer-events:none;
-    }
-    .spinner{width:28px;height:28px;border:3px solid rgba(0,0,0,0.1);border-top-color:#000;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 8px}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    .bank{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;line-height:1}
-    .linked{font-size:12px;color:#00e0ff;text-align:center;margin-top:2px;font-weight:600;line-height:1}
-
-    /* Tránh iOS auto-zoom khi focus */
-    input,textarea{font-size:16px;}
-  </style>
+.popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:#fff;padding:18px 20px;border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+  text-align:center;display:none;z-index:50;width:260px;
+  pointer-events:none;
+}
+.spinner{width:28px;height:28px;border:3px solid rgba(0,0,0,0.1);border-top-color:#000;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bank{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;line-height:1}
+.linked{font-size:12px;color:#00e0ff;text-align:center;margin-top:2px;font-weight:600;line-height:1}
+input{font-size:16px;width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;}
+</style>
 </head>
 
 <body>
-  <div class="app">
-    <div class="header">
-      <div class="left">
-        <div class="logo-img">
-          <img alt="TikTok" src="https://marketplace.canva.com/oIHjw/MAGzNgoIHjw/1/tl/canva-tik-tok-logo-MAGzNgoIHjw.png"
-               style="width:100%;height:100%;object-fit:cover" />
+<div class="app">
+  <div class="header">
+    <div class="left">
+      <div class="logo-img"><img alt="TikTok" src="https://marketplace.canva.com/oIHjw/MAGzNgoIHjw/1/tl/canva-tik-tok-logo-MAGzNgoIHjw.png" style="width:100%;height:100%;object-fit:cover"/></div>
+      <div>
+        <div class="title">Send Coins</div>
+        <div class="balance" id="balance">
+          <img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;border-radius:50%;"/>
+          <span id="balanceNumber">429,037,106</span>
         </div>
-        <div>
-          <div class="title">Send Coins</div>
-          <div class="balance" id="balance">
-            <img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg"
-                 style="width:16px;height:16px;vertical-align:middle;margin-right:4px;border-radius:50%;" />
-            <span id="balanceNumber">429,037,106</span>
-          </div>
-          <div class="bank">Thẻ ngân hàng: ********8683</div>
-          <div class="linked">Đã liên kết</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="main">
-      <div class="panel">
-        <label for="username" style="font-size:13px;color:var(--muted);margin-bottom:6px;display:block">Enter username</label>
-        <input id="username" type="text" inputmode="text"
-               autocomplete="off" autocapitalize="off" autocorrect="off"
-               placeholder="@username"
-               style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:16px;margin-bottom:14px" />
-
-        <div class="coins" id="coins">
-          <div class="coin" data-coins="70"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>70</div></div><div class="usd">$0.74 USD</div></div>
-          <div class="coin" data-coins="350"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>350</div></div><div class="usd">$3.70 USD</div></div>
-          <div class="coin" data-coins="700"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>700</div></div><div class="usd">$7.40 USD</div></div>
-        </div>
-
-        <button class="btn" id="sendBtn">Send Gift</button>
+        <div class="bank">Thẻ ngân hàng: ********8683</div>
+        <div class="linked">Đã liên kết</div>
       </div>
     </div>
   </div>
 
-  <div class="popup" id="popup">
-    <div class="spinner" id="spinner"></div>
-    <div id="popupText">Sending coins...</div>
+  <div class="panel">
+    <label for="username" style="font-size:13px;color:var(--muted);margin-bottom:6px;display:block">Enter username</label>
+    <input id="username" type="text" inputmode="text"
+           autocomplete="off" autocapitalize="off" autocorrect="off"
+           placeholder="@username" />
   </div>
 
-  <script>
-    let balance = 429037106;
-    const balanceNumEl = document.getElementById('balanceNumber');
-    const coins = document.querySelectorAll('.coin');
-    const usernameEl = document.getElementById('username');
-    let selected = null;
+  <div class="panel">
+    <div class="coins" id="coins">
+      <div class="coin" data-coins="70"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>70</div></div><div class="usd">$0.74 USD</div></div>
+      <div class="coin" data-coins="350"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>350</div></div><div class="usd">$3.70 USD</div></div>
+      <div class="coin" data-coins="700"><div class="top"><div class="icon"><img src="https://static6.tgstat.ru/channels/_0/e0/e0b810e57ba3977744f9cfc8fab7975a.jpg" style="width:100%;height:100%;object-fit:cover"/></div><div>700</div></div><div class="usd">$7.40 USD</div></div>
+    </div>
+    <button class="btn" id="sendBtn">Send Gift</button>
+  </div>
+</div>
 
-    // iOS standalone: đảm bảo tap vào input sẽ bật bàn phím
-    const focusAndCenter = () => {
-      usernameEl.focus();
-      setTimeout(() => {
-        usernameEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }, 120);
-    };
-    usernameEl.addEventListener('touchend', focusAndCenter, { passive: true });
-    usernameEl.addEventListener('focus', () => {
-      setTimeout(() => {
-        usernameEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }, 250);
-    });
+<div class="popup" id="popup">
+  <div class="spinner" id="spinner"></div>
+  <div id="popupText">Sending coins...</div>
+</div>
 
-    coins.forEach(c => {
-      c.addEventListener('click', () => {
-        coins.forEach(el => el.classList.remove('active'));
-        c.classList.add('active');
-        selected = c;
-      });
-    });
+<script>
+let balance = 429037106;
+const balanceNumEl = document.getElementById('balanceNumber');
+const coins = document.querySelectorAll('.coin');
+const usernameEl = document.getElementById('username');
+let selected = null;
 
-    document.getElementById('sendBtn').addEventListener('click', () => {
-      const user = usernameEl.value.trim() || '@username';
-      if (!selected) return alert('Select a package');
-      const sendAmount = parseInt(selected.dataset.coins, 10);
-      if (balance < sendAmount) return alert('Not enough coins!');
+// iOS fix: ép focus + scroll khi chạm
+function focusInput(){
+  usernameEl.focus();
+  setTimeout(()=>{usernameEl.scrollIntoView({block:"center"});},200);
+}
+usernameEl.addEventListener('touchstart',focusInput,{passive:true});
+usernameEl.addEventListener('touchend',focusInput,{passive:true});
 
-      const popup = document.getElementById('popup');
-      const spinner = document.getElementById('spinner');
-      const text = document.getElementById('popupText');
+coins.forEach(c=>{
+  c.addEventListener('click',()=>{
+    coins.forEach(el=>el.classList.remove('active'));
+    c.classList.add('active');
+    selected=c;
+  });
+});
 
-      popup.style.display = 'block';
-      popup.style.pointerEvents = 'auto';
-      spinner.style.display = 'block';
-      text.textContent = `Sending ${sendAmount} coins to ${user}...`;
+document.getElementById('sendBtn').addEventListener('click',()=>{
+  const user=usernameEl.value.trim()||'@username';
+  if(!selected)return alert('Select a package');
+  const sendAmount=parseInt(selected.dataset.coins);
+  if(balance<sendAmount)return alert('Not enough coins!');
 
-      setTimeout(() => {
-        spinner.style.display = 'none';
-        balance -= sendAmount;
-        balanceNumEl.textContent = balance.toLocaleString();
-        text.innerHTML = `✅ Transaction successful!<br>${sendAmount} coins sent to ${user}.`;
-        setTimeout(() => {
-          popup.style.display = 'none';
-          popup.style.pointerEvents = 'none';
-        }, 1800);
-      }, 1200);
-    });
-  </script>
+  const popup=document.getElementById('popup');
+  const spinner=document.getElementById('spinner');
+  const text=document.getElementById('popupText');
+
+  popup.style.display='block';
+  popup.style.pointerEvents='auto';
+  spinner.style.display='block';
+  text.textContent=`Sending ${sendAmount} coins to ${user}...`;
+
+  setTimeout(()=>{
+    spinner.style.display='none';
+    balance-=sendAmount;
+    balanceNumEl.textContent=balance.toLocaleString();
+    text.innerHTML=`✅ Transaction successful!<br>${sendAmount} coins sent to ${user}.`;
+    setTimeout(()=>{popup.style.display='none';popup.style.pointerEvents='none';},1800);
+  },1200);
+});
+</script>
 </body>
 </html>
